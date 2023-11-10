@@ -32,7 +32,7 @@ class ChangepassForm extends Component {
                 const resetPassRequest = Object.assign({}, values);
                 updatepassword(resetPassRequest)
                     .then(response => {
-                        if (response.status === 200) {
+                        if (response != null) {
                             notification.success({
                                 message: 'Đổi mật khẩu',
                                 description: "Đổi mật khẩu thành công",

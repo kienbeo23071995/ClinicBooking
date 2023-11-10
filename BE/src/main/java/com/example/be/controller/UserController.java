@@ -83,10 +83,10 @@ public class UserController {
 	@RequestMapping(value ="changepassword", method = RequestMethod.POST, produces = "application/json")
 	public ResponseEntity<?> updatePassword(@RequestBody UserUpdatePassword userUpdatePassword){
 		User user = userservice.findByEmail(userUpdatePassword.getEmail()).get();
-		if(user.getPassword().equals(passwordEncoder.encode(userUpdatePassword.getOldpass()))){
+		if(passwordEncoder.matches(userUpdatePassword.getOldpass(), user.getPassword())){
 			user.setPassword(passwordEncoder.encode(userUpdatePassword.getPassword()));
 			userservice.save(user);
-			return new ResponseEntity<>(user, HttpStatus.OK);
+			return ResponseEntity.ok(user);
 		}
 		else {
 			return ResponseEntity.badRequest().build();
