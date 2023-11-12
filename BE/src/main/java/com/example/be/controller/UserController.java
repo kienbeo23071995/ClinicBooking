@@ -1,12 +1,14 @@
 package com.example.be.controller;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.example.be.dto.*;
+import com.example.be.entities.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -121,7 +123,13 @@ public class UserController {
 		String check ="";
 		UserResponse userResponse =  userservice.getUserByIdAndCheckRole(currentUser.getId());
 		if(userResponse.getRoles().size()==1) {
-			check = "USER";
+			List<Role> roles = new ArrayList<>(userResponse.getRoles());
+			if(roles.get(0).getName().equals("SUPER_ADMIN")){
+				check = "ADMIN";
+			}
+			else {
+				check = "USER";
+			}
 		}else if(userResponse.getRoles().size()==2 && userResponse.getClinic().size() == 0) {
 			check = "USER_EXPERT";
 		}else if(userResponse.getRoles().size()==2 && userResponse.getClinic().size() > 0) {

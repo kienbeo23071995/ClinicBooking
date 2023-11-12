@@ -133,7 +133,6 @@ class NewClinic extends Component {
                         message: 'Booking Clinic',
                         description: "Thank you! Bạn đã đăng ký thành công.",
                     });
-
                     this.props.history.push("/");
                 }
             }).catch(error => {

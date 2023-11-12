@@ -172,12 +172,44 @@ class AppHeader extends Component {
         <Menu.Item key="/register/doctor">
           <Link to="/register/doctor">
             <div className="tooltip-icon">
-              <Icon style={{ fontSize: '20px', color: '#08c' }} type="usergroup-add" />
+              <Icon style={{ fontSize: '20px', color: '#08c' }} type="usergroup-li" />
               <span className="tooltiptext">Đăng ký Bác Sỹ</span>
             </div>
           </Link>
         </Menu.Item>,
 
+        <Menu.Item key="/profile" className="profile-menu">
+          <ProfileDropdownMenu
+            currentUser={this.props.currentUser}
+            handleMenuClick={this.handleMenuClick} />
+        </Menu.Item>
+      ];
+    } else if (this.props.currentUser && user.check === "ADMIN") {
+      menuItems = [
+        <Menu.Item key="/">
+          <Link to="/">
+            <div className="tooltip-icon">
+              <Icon style={{ fontSize: '20px', color: '#08c' }} type="home" className="nav-icon" />
+              <span className="tooltiptext">Trang Chủ</span>
+            </div>
+          </Link>
+        </Menu.Item>,
+        <Menu.Item key="/admin/users">
+          <Link to="/admin/users">
+            <div className="tooltip-icon">
+              <Icon style={{ fontSize: '20px', color: '#08c' }} type="team" />
+              <span className="tooltiptext">Quản lý tài khoản</span>
+            </div>
+          </Link>
+        </Menu.Item>,
+        <Menu.Item key="/admin/clinics">
+        <Link to="/admin/clinics">
+          <div className="tooltip-icon">
+            <Icon style={{ fontSize: '20px', color: '#08c' }} type="appstore" />
+            <span className="tooltiptext">Quản lý Phòng Khám</span>
+          </div>
+        </Link>
+      </Menu.Item>,
         <Menu.Item key="/profile" className="profile-menu">
           <ProfileDropdownMenu
             currentUser={this.props.currentUser}
@@ -250,7 +282,7 @@ class AppHeader extends Component {
             <div className="head-search" >
               <Button onClick={() => this.showModalSearch()} type="primary" icon="search">
                 Tìm Kiếm
-             </Button>
+              </Button>
             </div>
             <Menu
               className="app-menu"
@@ -297,7 +329,7 @@ function ProfileDropdownMenu(props) {
       trigger={['click']}
       getPopupContainer={() => document.getElementsByClassName('profile-menu')[0]}>
       <a className="ant-dropdown-link">
-        <Icon type="user" className="nav-icon" style={{ marginRight: 0 , fontSize: '18px', color: '#08c' }} /> <Icon type="down" />
+        <Icon type="user" className="nav-icon" style={{ marginRight: 0, fontSize: '18px', color: '#08c' }} /> <Icon type="down" />
       </a>
     </Dropdown>
   );
@@ -317,7 +349,7 @@ function Clinics(props) {
 
         props.user.clinicViews ? props.user.clinicViews.map((value, key) => (
           <Menu.Item key={key} className="dropdown-item">
-            <Link to={`/clinic/${value.idUser}/${value.idClinic}`}>Phòng khám  {key +1}</Link>
+            <Link to={`/clinic/${value.idUser}/${value.idClinic}`}>Phòng khám  {key + 1}</Link>
           </Menu.Item>
         )) : ""
       }
@@ -330,7 +362,7 @@ function Clinics(props) {
       trigger={['click']}
       getPopupContainer={() => document.getElementsByClassName('profile-menu')[0]}>
       <a >
-        <Icon type="windows" className="nav-icon" style={{ marginRight: 0 , fontSize: '18px', color: '#08c' }} />
+        <Icon type="windows" className="nav-icon" style={{ marginRight: 0, fontSize: '18px', color: '#08c' }} />
       </a>
     </Dropdown>
   );

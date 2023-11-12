@@ -22,9 +22,9 @@ public interface UserRepository extends JpaRepository<User, String>, CrudReposit
 	Optional<User> findByUsername(String username);
 	
 	List<User> findByIdIn(List<String> userIds);
-	
+	@Query(value ="SELECT count(u) > 0 FROM User u WHERE u.username = :username and u.isActive = true")
 	Boolean existsByUsername(String username);
-	
+	@Query(value ="SELECT count(u) > 0 FROM User u WHERE u.email = :email and u.isActive = true")
 	Boolean existsByEmail(String email);
 	
 	//SELECT e FROM Customer e WHERE e.name = :name
@@ -45,4 +45,7 @@ public interface UserRepository extends JpaRepository<User, String>, CrudReposit
 
 	@Query(value ="Select * from user LEFT JOIN user_role ON user.id = user_role.id_user LEFT JOIN role ON user_role.id_role = role.id  where user.id = :id_user and user.is_active = :is_active", nativeQuery=true)
 	User getUserAndRole(@Param("id_user") String id_user, @Param("is_active")boolean is_active);
+
+	@Query(value ="Select distinct user.* from user LEFT JOIN user_role ON user.id = user_role.id_user LEFT JOIN role ON user_role.id_role = role.id  where user.is_active = 1 and role.id != '402881868bc4a376018bc4a3eb8a0000'", nativeQuery=true)
+	List<User> findAllByRole();
 }

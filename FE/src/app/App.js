@@ -27,6 +27,9 @@ import { getUser } from "../actions/get.user.action";
 import SearchClinicAddress from '../clinic/search/SearchClinicAddress';
 import Resetpass from '../user/resetpassword/Resetpass';
 import changepassword from '../user/changepassword/changepassword';
+import adminLogin from '../admin/AdminLogin';
+import UserRes from '../admin/AdminUser';
+import AdminClinic from '../admin/AdminClinic';
 const { Content } = Layout;
 
 class App extends Component {
@@ -126,14 +129,15 @@ class App extends Component {
               <Route path="/login"
                 render={(props) => <Login onLogin={this.handleLogin} {...props} />}>
               </Route>
-
               <Route path="/signup" component={Signup}></Route>
               <Route path="/resetpass" component={Resetpass}></Route>
               <Route path="/users/changepassword" component={changepassword}></Route>
               <Route path="/users/:username"
                 render={(props) => <Profile isAuthenticated={this.state.isAuthenticated} currentUser={this.state.currentUser} {...props} />}>
               </Route>
-
+              <Route path="/admin/users"
+                render={(props) => <UserRes isAuthenticated={this.state.isAuthenticated} currentUser={this.state.currentUser} {...props} />}>
+              </Route>
               <Route exact path="/clinic/:id_doctor/:id_clinic"
                 render={(props) => <Clinic isAuthenticated={this.state.isAuthenticated}
                   currentUser={this.state.currentUser} handleLogout={this.handleLogout} {...props} />}>
@@ -145,7 +149,8 @@ class App extends Component {
               </Route>
 
               <PrivateRoute onchangerLoadHeard={this.changerLoadHeard} authenticated={this.state.isAuthenticated} path="/register/doctor" component={RegisterDoctor} handleLogout={this.handleLogout} />
-
+              <PrivateRoute onchangerLoadHeard={this.changerLoadHeard} authenticated={this.state.isAuthenticated} path="/admin/users" component={UserRes} handleLogout={this.handleLogout} />
+              <PrivateRoute onchangerLoadHeard={this.changerLoadHeard} authenticated={this.state.isAuthenticated} path="/admin/clinics" component={AdminClinic} handleLogout={this.handleLogout} />
               <PrivateRoute authenticated={this.state.isAuthenticated} path="/register/clinic" component={NewClinic} handleLogout={this.handleLogout} />
 
               <Route component={NotFound}></Route>

@@ -346,7 +346,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public DataResponse getAllUser() {
-		List<User> users = userRepository.findAll();
+		List<User> users = userRepository.findAllByRole();
 		if(users.size() > 0 ) {
 			return new DataResponse(true, new Data("lấy danh sách user thành công!!",HttpStatus.OK.value(),users));
 		}

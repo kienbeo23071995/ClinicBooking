@@ -272,7 +272,7 @@ export async function  sendEmailBooking(booking) {
 
 export async function  sendEmailBookedBusyy(id_booked) {
 	let data = {};
-	await callAPI("send-email/busyy/"+id_booked,'GET')
+	await callAPI("booking/send-email/busyy/"+id_booked,'GET')
 		.then(response =>{
 			data = Object.assign({}, data);
 			data =  response
@@ -323,6 +323,26 @@ export async function  addLichForDoctor(lich) {
 export async function  deleteBookingApi(id) {
 	let data = {};
 	await callAPI("booking/delete/"+id,'POST')
+		.then(response =>{
+			data = Object.assign({}, data);
+			data =  response.data;
+		})
+	return data;
+}
+
+export async function  getAllUsers() {
+	let data = {};
+	await callAPI("user/admin/all",'GET')
+		.then(response =>{
+			data = Object.assign({}, data);
+			data =  response.data;
+		})
+	return data;
+}
+
+export async function  getAllClinics() {
+	let data = {};
+	await callAPI("clinic/all",'GET')
 		.then(response =>{
 			data = Object.assign({}, data);
 			data =  response.data;
