@@ -172,7 +172,7 @@ class AppHeader extends Component {
         <Menu.Item key="/register/doctor">
           <Link to="/register/doctor">
             <div className="tooltip-icon">
-              <Icon style={{ fontSize: '20px', color: '#08c' }} type="usergroup-li" />
+              <Icon style={{ fontSize: '20px', color: '#08c' }} type="usergroup-add" />
               <span className="tooltiptext">Đăng ký Bác Sỹ</span>
             </div>
           </Link>

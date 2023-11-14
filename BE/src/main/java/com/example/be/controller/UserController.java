@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import com.example.be.dto.*;
 import com.example.be.entities.Role;
+import com.example.be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,9 @@ public class UserController {
 
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	
+	@Autowired
+	private UserRepository userRepository;
+
 	@RequestMapping(value= "/me", method = RequestMethod.GET, produces = "application/json")
     public UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser) {
         UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getUsername(), currentUser.getFullName());
@@ -168,5 +171,12 @@ public class UserController {
 	public DataResponse getAllUserForAdmin(){
 		return userservice.getAllUser();
 	}
-	
+
+	@RequestMapping(value = "delete/{id}",method = RequestMethod.GET,produces = "application/json")
+	public DataResponse deleteUser(@PathVariable("id") String id){
+		User user = userRepository.findById(id).get();
+		user.setActive(false);
+		userRepository.save(user);
+		return userservice.getAllUser();
+	}
 }

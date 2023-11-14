@@ -76,7 +76,7 @@ function UserRes() {
             </Table>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Cập nhật thông tin tài khoản</Modal.Title>
+                    <Modal.Title>Thông tin tài khoản</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form id='form'>
