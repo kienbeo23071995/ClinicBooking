@@ -9,7 +9,7 @@ import { Spin, Alert, notification, Icon, Modal, Button, Carousel, Layout, Tabs,
 import { connect } from "react-redux";
 import { getDoctorOfClinicList } from "../../actions/doctorsOfClinic.list.action";
 import { getUser } from "../../actions/get.user.action";
-import { addRateForDoctor } from './../../util/api/call-api';
+import { addRateForDoctor, deletePostForClinic, deletePriceForClinic, editPostForClinic, editPriceForClinic } from './../../util/api/call-api';
 import { addPrices } from './../../util/api/call-api';
 import { addDoctorInClinic } from './../../util/api/call-api';
 import { getDoctorsOfClinicApi } from './../../util/api/call-api';
@@ -30,6 +30,7 @@ import 'braft-editor/dist/index.css'
 import LoadingIsEmpty from '../../common/LoadingIsEmpty';
 import { MAX_CHOICES } from '../../constants';
 import FooterLayout from '../../common/FooterLayout';
+import { CloseButton } from 'react-bootstrap';
 const { Content } = Layout;
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -42,11 +43,18 @@ class Clinic extends Component {
         super(props);
         this.state = {
             editorState: BraftEditor.createEditorState(null),
+            editorStateContentPost: BraftEditor.createEditorState(null),
             editorStateValue: "",
+            visibleEditPrice: false,
             contentCommnet: {
                 value: ""
             },
+            editPriceId : "",
+            editPriceContent : "",
+            editPriceNumber : "",
             idTypePost: "",
+            idTypeEditPost: "",
+            idPost: "",
             clinics: {},
             clinicCreateBy: "",
             userResponceClinics: [],
@@ -58,6 +66,7 @@ class Clinic extends Component {
             visibleCreateSecheduce: false,
             isLoading: false,
             visiblePost: false,
+            editVisiblePost: false,
             visiblePrice: false,
             checkDoctor: "",
             viewFormAddDoctor: false,
@@ -326,6 +335,10 @@ class Clinic extends Component {
         this.setState({ editorState: editorState.toHTML() })
     }
 
+    handleChangeEditorPost = (editorState) => {
+        this.setState({ editorStateContentPost: editorState.toHTML() })
+    }
+
     showModalCreatePost = async () => {
 
         this.setState({
@@ -333,6 +346,44 @@ class Clinic extends Component {
 
         });
     };
+
+    showModalEditPost = async (value, type) => {
+        this.setState({
+            editVisiblePost: true,
+            idTypeEditPost: type,
+            idPost: value.id,
+            editorStateContentPost: BraftEditor.createEditorState(value.content)
+        });
+    };
+
+    showModalEditPrice = async (value) => {
+        this.setState({
+            visibleEditPrice: true,
+            editPriceId: value.id,
+            editPriceContent: value.description,
+            editPriceNumber: value.totalPrice
+        });
+    };
+
+    deletePost = async (value) => {
+        let param = {
+            id: value.id
+        }
+        deletePostForClinic(param).then(response => {
+            if (response.data.data.status === 200) {
+                notification.success({
+                    message: 'Booking Clinic',
+                    description: "Xóa thành công !",
+                });
+                window.location.reload(false);
+            } else {
+                notification.error({
+                    message: 'Booking Clinic',
+                    description: response.data.data.message
+                });
+            }
+        })
+    }
 
     showModalCreatePrice = async () => {
 
@@ -346,6 +397,13 @@ class Clinic extends Component {
         this.setState({
             visiblePost: false,
             editorState: BraftEditor.createEditorState(null),
+        });
+    }
+
+    handleCancelEditPost = () => {
+        this.setState({
+            editVisiblePost: false,
+            editorStateContentPost: BraftEditor.createEditorState(null),
         });
     }
 
@@ -365,10 +423,56 @@ class Clinic extends Component {
         });
     }
 
+    handleCancelEditPrice = () => {
+        this.setState({
+            visibleEditPrice: false,
+            editPriceContent : "",
+            editPriceNumber : ""
+        });
+    }
+
     onChangeSelectPostType = (value) => {
         this.setState({
             idTypePost: value
         })
+    }
+
+    handleSavePost = () => {
+        if (this.state.idTypeEditPost === "" || this.state.editorStateContentPost.length < 1000) {
+            if (this.state.idTypeEditPost === "") {
+                notification.error({
+                    message: 'Booking Clinic',
+                    description: 'Xin lỗi bạn! Bạn chưa chọn kiểu bài viêt'
+                });
+            } else {
+                notification.error({
+                    message: 'Booking Clinic',
+                    description: 'Xin lỗi bạn! Nội dung bài viêt quá ít!'
+                });
+            }
+
+        } else {
+            let param = {
+                content: this.state.editorStateContentPost,
+                id: this.state.idPost,
+                idTypePost: this.state.idTypeEditPost
+            }
+            editPostForClinic(param).then(response => {
+                if (response.data.data.status === 200) {
+                    notification.success({
+                        message: 'Booking Clinic',
+                        description: "Chỉnh sửa thành công !",
+                    });
+
+                    window.location.reload(false);
+                } else {
+                    notification.error({
+                        message: 'Booking Clinic',
+                        description: response.data.data.message
+                    });
+                }
+            })
+        }
     }
 
     handleOkPost = () => {
@@ -440,6 +544,35 @@ class Clinic extends Component {
             viewFormAddDoctor: !this.state.viewFormAddDoctor,
         });
     };
+
+    handleSavePrice = () => {
+        let param = {
+            id: this.state.editPriceId,
+            totalPrice: this.state.editPriceNumber,
+            description: this.state.editPriceContent
+        }
+        editPriceForClinic(param).then(response => {
+            if (response.data.data.status === 200) {
+                notification.success({
+                    message: 'Booking Clinic',
+                    description: "Chỉnh sửa thành công !",
+                });  
+                window.location.reload(false);          
+            } 
+        })
+    }
+
+    handleEditPriceContent = (e) => {
+        this.setState({
+            editPriceContent : e
+        })
+    }
+
+    handleEditPriceNumber = (e) => {
+        this.setState({
+            editPriceNumber : e
+        })
+    }
 
     handleInputChangeEmail = (event) => {
 
@@ -540,6 +673,23 @@ class Clinic extends Component {
             },
         })
     )
+
+    deletePrice = (value) => {
+        deletePriceForClinic(value).then(response => {
+            if (response.data.data.status === 200) {
+                notification.success({
+                    message: 'Booking Clinic',
+                    description: "Xóa thành công !",
+                });
+                window.location.reload(false);
+            } else {
+                notification.error({
+                    message: 'Booking Clinic',
+                    description: response.data.data.message
+                });
+            }
+        })
+    }
 
     showConfirmBusyy = (idBooked) => (
         confirm({
@@ -672,20 +822,95 @@ class Clinic extends Component {
                                 </Modal>
                             </div>
 
+                            <div className="commnet-modal">
+                                <Modal
+                                    style={{ top: 0 }}
+                                    width={920}
+                                    visible={this.state.editVisiblePost}
+                                    onCancel={this.handleCancelEditPost}
+                                    onOk={this.handleSavePost}
+                                >
+                                    <span className="title-booking">SỬA THÔNG TIN PHÒNG KHÁM</span>
+                                    <hr className="line-line-post"></hr>
+                                    <div className="line-line-post-type">
+                                        <strong>LOẠI BÀI VIẾT :</strong>
+                                        <Select
+                                            style={{ width: '30%' }}
+                                            placeholder="Hảy Chọn Kiểu Đăng Bài Viết"
+                                            onChange={this.onChangeSelectPostType}
+                                            value={this.state.idTypeEditPost}
+                                            disabled={true}
+                                        >
+                                            {
+                                                this.state.postTypes ? this.state.postTypes.map((value, key) =>
+                                                    <Option key={key} value={this.state.postTypes[key].id}>{value.name}</Option>
+                                                ) : null
+                                            }
+                                        </Select>
+                                    </div>
+
+                                    <hr className="line-line-post"></hr>
+                                    <BraftEditor contentStyle={{ height: 400, boxShadow: 'inset 0 1px 3px rgba(0,0,0,.1)' }} language="en" placeholder="Nhập thông tin phòng khám ...." value={this.state.editorStateContentPost} onChange={this.handleChangeEditorPost} />
+                                </Modal>
+                            </div>
+                            <div className="commnet-modal-">
+                                <Modal
+                                    style={{ top: 5 }}
+                                    footer={null}
+                                    visible={this.state.visibleEditPrice}
+                                    onCancel={this.handleCancelEditPrice}
+                                >
+                                    <span className="title-booking">SỬA CHI TIẾT GIÁ PHÒNG KHÁM</span>
+                                    <div className="new-poll-container">
+                                        <div className="new-poll-content">
+                                            <Form className="create-poll-form">
+                                                <FormItem className="poll-form-row">
+                                                    <Row>
+                                                        <Col span={12}>
+                                                            <Input
+                                                                placeholder={"Nhập nội dung giá !"}
+                                                                size="large"
+                                                                value={this.state.editPriceContent}
+                                                                className={"optional-choice"}
+                                                                onChange={(event) => this.handleEditPriceContent(event.target.value)} />
+                                                        </Col>
+                                                        <Col span={10}>
+                                                            <Input
+                                                                placeholder={"Nhập số tiền  VND!"}
+                                                                size="large"
+                                                                value={this.state.editPriceNumber}
+                                                                className={"optional-choice"}
+                                                                onChange={(event) => this.handleEditPriceNumber(event.target.value)} />
+                                                        </Col>
+                                                    </Row>
+
+                                                </FormItem>
+
+                                                <FormItem className="poll-form-row">
+                                                    <Button type="primary"
+                                                        size="large" onClick={() => this.handleSavePrice()}
+                                                        className="create-poll-form-button">LƯU</Button>
+                                                </FormItem>
+                                            </Form>
+                                        </div>
+                                    </div>
+                                </Modal>
+                            </div>
+
                             <div className="clinic-left">
                                 <div className="logo-clinic">
                                     {
                                         clinics.photoClinicLogo ? (
-                                            <CardImg  className="logo-clinic-image"  variant="top" src={"data:image/jpeg;base64," + clinics.photoClinicLogo.data } />
+                                            <CardImg className="logo-clinic-image" variant="top" src={"data:image/jpeg;base64," + clinics.photoClinicLogo.data} />
                                         ) : (
-                                                <Spin tip="Loading...">
-                                                    <Alert
-                                                        message="Alert message title"
-                                                        description="Further details about the context of this alert."
-                                                        type="info"
-                                                    />
-                                                </Spin>
-                                            )
+                                            <Spin tip="Loading...">
+                                                <Alert
+                                                    message="Alert message title"
+                                                    description="Further details about the context of this alert."
+                                                    type="info"
+                                                />
+                                            </Spin>
+                                        )
                                     }
 
                                 </div>
@@ -715,7 +940,7 @@ class Clinic extends Component {
                                             <Radio.Group >
                                                 <Button className="btn-left-clinic" type="primary" onClick={this.showModalCreatePost} shape="round" size="default">
                                                     THÊM THÔNG TIN PHÒNG KHÁM
-                                                 </Button>
+                                                </Button>
                                             </Radio.Group>
                                         ) : ""
                                     }
@@ -737,7 +962,7 @@ class Clinic extends Component {
                                             <Radio.Group >
                                                 <Button className="btn-left-clinic" type="primary" onClick={this.showFormAddDoctor} shape="round" size="default">
                                                     THÊM BÁC SỸ VÀO PHÒNG KHÁM
-                                                 </Button>
+                                                </Button>
                                             </Radio.Group>
                                         ) : ""
                                     }
@@ -758,7 +983,7 @@ class Clinic extends Component {
                                                         placeholder="Nhập địa chỉ Email or Username !"
                                                         onChange={this.handleInputChangeEmail}
                                                         style={{ width: '82%' }} />,
-                                                 </FormItem>
+                                                </FormItem>
                                                 <FormItem wrapperCol={{ span: 14, offset: 6 }}>
                                                     <Button type="primary" onClick={this.handleSubmitAddDoctor}>
                                                         Submit
@@ -774,7 +999,7 @@ class Clinic extends Component {
                                 <div >
                                     <CardText className="huong-dan" >
                                         Hướng dẫn đặt lịch
-                                            </CardText>
+                                    </CardText>
                                     {/* <ReactPlayer className ="video-youtube" width='100%' height='100%' url='https://www.youtube.com/watch?v=0my54A3071s' playing /> */}
                                 </div>
 
@@ -802,7 +1027,14 @@ class Clinic extends Component {
                                             <TabPane tab="THÔNG TIN PHÒNG KHÁM" key="2">
                                                 {
                                                     postInfors ? postInfors.map((value, key) => (
-                                                        <div key={key} className="posts-infor" dangerouslySetInnerHTML={{ __html: value.content }}>
+                                                        <div>
+                                                            <div>
+                                                                <Button onClick={() => this.showModalEditPost(value, 'fdef1d42-7f3f-11ee-8c1f-d481d761f4b9')} style={{ height: '0px', border: 'none', padding: '0', position: 'absolute', left: '94%' }}><Icon type="edit" ></Icon></Button>
+                                                                <Button onClick={() => this.deletePost(value)} style={{ height: '0px', border: 'none', padding: '0', position: 'absolute', left: '97%' }}><Icon type="delete" ></Icon></Button>
+                                                            </div>
+                                                            <div key={key} className="posts-infor" dangerouslySetInnerHTML={{ __html: value.content }}>
+
+                                                            </div>
                                                         </div>
                                                     )) : <LoadingIsEmpty></LoadingIsEmpty>
                                                 }
@@ -810,7 +1042,13 @@ class Clinic extends Component {
                                             <TabPane tab="TRANG THIẾT BỊ" key="3">
                                                 {
                                                     postDevices ? postDevices.map((value, key) => (
-                                                        <div key={key} className="posts-infor" dangerouslySetInnerHTML={{ __html: value.content }}>
+                                                        <div>
+                                                            <div>
+                                                                <Button onClick={() => this.showModalEditPost(value, 'fdef8a87-7f3f-11ee-8c1f-d481d761f4b9')} style={{ height: '0px', border: 'none', padding: '0', position: 'absolute', left: '94%' }}><Icon type="edit" ></Icon></Button>
+                                                                <Button onClick={() => this.deletePost(value)} style={{ height: '0px', border: 'none', padding: '0', position: 'absolute', left: '97%' }}><Icon type="delete" ></Icon></Button>
+                                                            </div>
+                                                            <div key={key} className="posts-infor" dangerouslySetInnerHTML={{ __html: value.content }}>
+                                                            </div>
                                                         </div>
                                                     )) : <LoadingIsEmpty />
                                                 }
@@ -818,12 +1056,13 @@ class Clinic extends Component {
                                             <TabPane className="prices" tab="CHI TIẾT GIÁ" key="4">
                                                 {
                                                     prices.prices.object ? (
-                                                        <table >
+                                                        <table>
                                                             <tbody>
                                                                 <tr>
                                                                     <th>STT</th>
                                                                     <th>THÔNG TIN CHI TIẾT DỊCH VỤ</th>
                                                                     <th>GIÁ TIỀN - VND</th>
+                                                                    <th colSpan={2}></th>
                                                                 </tr>
                                                                 {
                                                                     prices.prices.object.map((value, key) => (
@@ -831,6 +1070,8 @@ class Clinic extends Component {
                                                                             <td>{key + 1}</td>
                                                                             <td>{value.description}</td>
                                                                             <td>{value.totalPrice}<sub>đ</sub></td>
+                                                                            <td><Button style={{ marginLeft: '30%' }} onClick={() => this.showModalEditPrice(value)}>Sửa</Button></td>
+                                                                            <td><Button style={{ marginLeft: '30%' }} onClick={() => this.deletePrice(value.id)}>Xóa</Button></td>
                                                                         </tr>
                                                                     ))
                                                                 }
@@ -842,8 +1083,15 @@ class Clinic extends Component {
                                             <TabPane tab="QUY TRÌNH KHÁM BỆNH" key="5">
                                                 {
                                                     postProcess ? postProcess.map((value, key) => (
-                                                        <div key={key} className="posts-infor" dangerouslySetInnerHTML={{ __html: value.content }}>
+                                                        <div>
+                                                            <div>
+                                                                <Button onClick={() => this.showModalEditPost(value, 'fdeff1e3-7f3f-11ee-8c1f-d481d761f4b9')} style={{ height: '0px', border: 'none', padding: '0', position: 'absolute', left: '94%' }}><Icon type="edit" ></Icon></Button>
+                                                                <Button onClick={() => this.deletePost(value)} style={{ height: '0px', border: 'none', padding: '0', position: 'absolute', left: '97%' }}><Icon type="delete" ></Icon></Button>
+                                                            </div>
+                                                            <div key={key} className="posts-infor" dangerouslySetInnerHTML={{ __html: value.content }}>
+                                                            </div>
                                                         </div>
+
                                                     )) : <LoadingIsEmpty />
                                                 }
                                             </TabPane>

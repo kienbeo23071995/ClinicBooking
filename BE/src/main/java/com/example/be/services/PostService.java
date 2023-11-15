@@ -7,6 +7,9 @@ import com.example.be.security.UserPrincipal;
 public interface PostService {
 	
 	DataResponse addPostForClinic(PostRequest postRequest, UserPrincipal currentUser) ;
-	
+	DataResponse editPostForClinic(PostRequest postRequest, UserPrincipal currentUser) ;
+
 	DataResponse getPostTypePostForClinic(String idClinic, String typePost);
+
+	DataResponse deletePost(String id);
 }

@@ -9,4 +9,8 @@ public interface PriceService {
 	DataResponse addPricesClinic(String idClinic, List<PriceRequest> priceRequests);
 	
 	DataResponse getPricesClinic(String idClinic);
+
+	DataResponse editPrice(PriceRequest priceRequest);
+
+	DataResponse deletePrice (String id);
 }

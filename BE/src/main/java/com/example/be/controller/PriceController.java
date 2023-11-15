@@ -24,5 +24,15 @@ public class PriceController {
 	public DataResponse createToken (@PathVariable("id_clinic") String id_clinic, @RequestBody List<PriceRequest> priceRequests ){
 		return priceService.addPricesClinic(id_clinic, priceRequests);
 	}
+
+	@RequestMapping(value= "edit",method = RequestMethod.POST, produces = "application/json")
+	public DataResponse editPrice (@RequestBody PriceRequest priceRequests ){
+		return priceService.editPrice(priceRequests);
+	}
+
+	@RequestMapping(value= "delete/{id}",method = RequestMethod.GET, produces = "application/json")
+	public DataResponse deletePrice (@PathVariable String id){
+		return priceService.deletePrice(id);
+	}
 	
 }

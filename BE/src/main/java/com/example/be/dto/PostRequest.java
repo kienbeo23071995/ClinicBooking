@@ -8,6 +8,8 @@ public class PostRequest {
 	
 	private String content;
 
+	private String id;
+
 	public PostRequest() {
 		super();
 	}
@@ -34,5 +36,13 @@ public class PostRequest {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }

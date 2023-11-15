@@ -1,5 +1,6 @@
 package com.example.be.services.impl;
 
+import java.util.Date;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,16 @@ public class PostServiceImpl implements PostService{
 	}
 
 	@Override
+	public DataResponse editPostForClinic(PostRequest postRequest, UserPrincipal currentUser) {
+		Post post = postRepository.findById(postRequest.getId()).get();
+		post.setContent(postRequest.getContent());
+		post.setUpdateAt(new Date());
+		post.setUpdatedBy(currentUser.getId());
+		postRepository.save(post);
+		return new DataResponse(true, new Data("Chỉnh sửa bài viết thành công !",HttpStatus.OK.value()));
+	}
+
+	@Override
 	public DataResponse getPostTypePostForClinic(String idClinic, String typePost) {
 		Set<Post> posts = postRepository.getPostFollowTypePost(idClinic, typePost);
 		
@@ -56,6 +67,12 @@ public class PostServiceImpl implements PostService{
 			return new DataResponse(true, new Data("Lấy thành công !",HttpStatus.OK.value(),posts));
 		}
 		return new DataResponse(false, new Data("Lấy không thành công !",HttpStatus.BAD_REQUEST.value()));
+	}
+
+	@Override
+	public DataResponse deletePost(String id) {
+		postRepository.deleteById(id);
+		return new DataResponse(true, new Data("Xóa bài viết thành công !",HttpStatus.OK.value()));
 	}
 
 }

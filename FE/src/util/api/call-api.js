@@ -200,6 +200,46 @@ export async function  addPostForClinic(post) {
 	return data;
 }
 
+export async function  editPostForClinic(post) {
+	let data = {};
+	await callAPI("posts/edit",'POST',post)
+		.then(response =>{
+			data = Object.assign({}, data);
+			data =  response;
+		})
+	return data;
+}
+
+export async function  editPriceForClinic(param) {
+	let data = {};
+	await callAPI("price/edit",'POST',param)
+		.then(response =>{
+			data = Object.assign({}, data);
+			data =  response;
+		})
+	return data;
+}
+
+export async function  deletePostForClinic(post) {
+	let data = {};
+	await callAPI("posts/delete/" + post.id,'GET')
+		.then(response =>{
+			data = Object.assign({}, data);
+			data =  response;
+		})
+	return data;
+}
+
+export async function  deletePriceForClinic(id) {
+	let data = {};
+	await callAPI("price/delete/" + id,'GET')
+		.then(response =>{
+			data = Object.assign({}, data);
+			data =  response;
+		})
+	return data;
+}
+
 export async function  getPostTypeApi(params) {
 	let data = {};
 

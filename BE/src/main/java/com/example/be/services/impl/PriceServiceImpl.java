@@ -2,6 +2,7 @@ package com.example.be.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,21 @@ public class PriceServiceImpl implements PriceService{
 		}
 		
 		return  new DataResponse(false, new Data("Phòng khám không tồn tại !",HttpStatus.BAD_REQUEST.value()));
+	}
+
+	@Override
+	public DataResponse editPrice(PriceRequest priceRequest) {
+		Price price = priceRepository.findById(priceRequest.getId()).get();
+		price.setDescription(priceRequest.getDescription());
+		price.setTotalPrice(priceRequest.getTotalPrice());
+		priceRepository.save(price);
+		return new DataResponse(true, new Data("Chỉnh sửa thành công !!",HttpStatus.OK.value()));
+	}
+
+	@Override
+	public DataResponse deletePrice(String id) {
+		priceRepository.deleteById(id);
+		return new DataResponse(true, new Data("Chỉnh sửa thành công !!",HttpStatus.OK.value()));
 	}
 
 }
